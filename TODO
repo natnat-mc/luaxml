@@ -1,0 +1,13 @@
+-> Fix the end tag detector
+ -> It throws an error when it sees an invalid en tag
+  -> `</fkfjfjfjf or nit` throws an error
+ -> It should check for a complete end tag instead
+  -> `</jfifebfj ifr djfe` should be treated as #text instead
+  -> It should not assume there is a `>` and inore it, but instead read from the `</` and up to the `>` and check what's between
+ -> If the parent is closed before its child, then throw an error saying that explicitly, and use a flag to configure the depth of the search and forgiveness
+-> Use an object for the options
+ -> options.html should control whether or not to work in HTML mode
+ -> options.xml should control whether or not to check for a `<?xml` tag
+ -> options.forgive should control whether or not to forgive some errors (but this could cause other unrelated and hard to debug errors
+ -> options.htmlshort should be a list of HTML tags which don't need to be closed (so that we stop at its start tag without needing an end tag)
+ -> options.errordepth should be the maximum depth when attempting to detect when the parent is being closed instead of the child
