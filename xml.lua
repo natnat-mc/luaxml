@@ -373,7 +373,7 @@ end
 	A lookup table of all HTML elements which should do not have an ending tag.
 ]]
 xml.htmlcompact={}
-for i, v in ipairs {'br', 'img', 'meta', 'link'} do
+for i, v in ipairs {'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'} do
 	xml.htmlcompact[v]=true
 end
 
