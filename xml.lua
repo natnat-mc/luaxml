@@ -327,7 +327,7 @@ end
 	Creates a node of the given type.
 ]]
 function xml.createnode(t)
-	if type(t)~='string' or (t~='#text' and not t:match('^[%l%u%d]+$')) then
+	if type(t)~='string' or (t~='#text' and not t:match('^[%l%u%d:]+$')) then
 		error('illegal type for node', 2)
 	end
 	local node={}
