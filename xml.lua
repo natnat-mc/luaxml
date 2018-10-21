@@ -142,7 +142,7 @@ function xml.node:getclasses()
 end
 
 --[[ boolean node:matches(nodematcher|function matcher)
-	Checks whether or not thus node matches the given criteria.
+	Checks whether or not this node matches the given criteria.
 ]]
 function xml.node:matches(matcher)
 	if type(matcher)=='function' then
@@ -201,7 +201,7 @@ function xml.node:removechild(child)
 end
 
 --[[ iterator<xml.node> node:traverse()
-	Returns an iterator which will traverse the graph using a depth first algorythm.
+	Returns an iterator which will traverse the graph using a depth first algorithm.
 	Uses coroutines and recursion internally.
 ]]
 function xml.node:traverse()
