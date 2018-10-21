@@ -13,8 +13,14 @@ xml.node.__index=xml.node
 
 --[[ typedef: nodematcher
 	type: string?
-	classes: string[]?
 	id: string?
+	classes: string[]?
+	properties: map<string, [string, string?]>?
+	empty: boolean?
+	firstchild: boolean?
+	lastchild: boolean?
+	onlychild: boolean?
+	root: boolean?
 	parent: nodematcher?
 ]]
 
@@ -151,7 +157,7 @@ function xml.node:matches(matcher)
 	if type(matcher)~='table' then
 		error('invalid criteria', 2)
 	end
-	if matcher.type and matcher.type~=self.type then
+	if matcher.type and matcher.type~=self.type and matcher.type~='*' then
 		return false
 	end
 	if matcher.id and matcher.id~=self:getproperty('id') then
@@ -162,6 +168,54 @@ function xml.node:matches(matcher)
 			if not self:hasclass(class) then
 				return false
 			end
+		end
+	end
+	if matcher.properties then
+		for k, v in pairs(matcher.properties) do
+			local prop=self:getproperty(k)
+			local kind, value=v[1], v[2]
+			if kind=='exists' then
+				if not prop then
+					return false
+				end
+			elseif kind=='equals' then
+				if prop~=value then
+					return false
+				end
+			elseif kind=='contains' then
+				if type(prop)~='string' or not prop:find(value, 1, true) then
+					return false
+				end
+			elseif kind=='startswith' then
+				if type(prop)~='string' or prop:find(value, 1, true)~=1 then
+					return false
+				end
+			end
+		end
+	end
+	if matcher.empty then
+		if self.children and #self.children~=0 then
+			return false
+		end
+	end
+	if matcher.firstchild then
+		if self.parent and self.parent.children[1]~=self then
+			return false
+		end
+	end
+	if matcher.lastchild then
+		if self.parent and self.parent.children[#self.parent.children]~=self then
+			return false
+		end
+	end
+	if matcher.onlychild then
+		if self.parent and #self.parent.children~=1 then
+			return false
+		end
+	end
+	if matcher.root then
+		if self.parent then
+			return false
 		end
 	end
 	if matcher.parent then
@@ -344,7 +398,10 @@ function xml.getselector(selector)
 	local list={}
 	for item in selector:gmatch('%S+') do
 		local matcher={}
-		matcher.type=item:match('^[%u%l%d-_]+')
+		matcher.type=item:match('^[%u%l%d-_:]+')
+		if item:find('*', 1, true)==1 then
+			matcher.type='*'
+		end
 		matcher.id=item:match('#([%u%l%d-_]+)')
 		local classes={}
 		for class in item:gmatch('%.([%u%l%d-_]+)') do
