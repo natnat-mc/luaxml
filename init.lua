@@ -365,10 +365,11 @@ function xml.node:dump(html, pretty)
 	return table.concat(code)
 end
 
---[[ xml.node node:clone()
+--[[ xml.node node:clone(boolean deep)
 	Clones a node or tree, resulting in an identical but separate object.
+	The clone can be deep, in which case the children will also be cloned.
 ]]
-function xml.node:clone()
+function xml.node:clone(deep)
 	if self.type=='#text' then
 		return xml.createtextnode(self.text)
 	end
@@ -378,9 +379,9 @@ function xml.node:clone()
 			clone:setproperty(k, v)
 		end
 	end
-	if self.children then
+	if self.children and deep then
 		for i, v in ipairs(self.children) do
-			clone:appendchild(v:clone())
+			clone:appendchild(v:clone(deep))
 		end
 	end
 	return clone
