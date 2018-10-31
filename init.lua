@@ -365,6 +365,27 @@ function xml.node:dump(html, pretty)
 	return table.concat(code)
 end
 
+--[[ xml.node node:clone()
+	Clones a node or tree, resulting in an identical but separate object.
+]]
+function xml.node:clone()
+	if self.type=='#text' then
+		return xml.createtextnode(self.text)
+	end
+	local clone=xml.createnode(self.type)
+	if self.properties then
+		for k, v in pairs(self.properties) do
+			clone:setproperty(k, v)
+		end
+	end
+	if self.children then
+		for i, v in ipairs(self.children) do
+			clone:appendchild(v:clone())
+		end
+	end
+	return clone
+end
+
 --[[ xml.node xml.createtextnode(string text)
 	Creates a text node holding the given text.
 ]]
