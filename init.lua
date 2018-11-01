@@ -48,13 +48,13 @@ end
 ]]
 function xml.node:settext(text)
 	if self.type=='#text' then
-		self.text=text
+		self.text=tostring(text)
 		return
 	elseif #self.children==0 then
 		self:appendchild(xml.createtextnode(text))
 		return
 	elseif #self.children==1 and self.children[1].type=='#text' then
-		self.children[1].text=text
+		self.children[1].text=tostring(text)
 		return
 	else
 		error('unable to set text of node', 2)
@@ -65,8 +65,19 @@ end
 	Sets a given property of a node.
 ]]
 function xml.node:setproperty(key, value)
+	if type(value)=='number' then
+		value=tostring(value)
+	end
+	if type(value)=='boolean' then
+		if value then
+			return self:setproperty(key, key)
+		elseif self.properties then
+			self.properties[key]=nil
+		end
+		return
+	end
 	if type(key)~='string' or type(value)~='string' then
-		error('illegal types for arguments', 2)
+		error('illegal types for arguments: '..type(key)..', '..type(value), 2)
 	end
 	local props=self.properties or {}
 	props[key:lower()]=value
@@ -92,7 +103,7 @@ end
 ]]
 function xml.node:addclass(class)
 	if type(class)~='string' then
-		error('illegal argument type', 2)
+		error('illegal argument type: '..type(class), 2)
 	end
 	if not self:hasclass(class) then
 		local clist=self:getproperty('class')
@@ -106,7 +117,7 @@ end
 ]]
 function xml.node:removeclass(class)
 	if type(class)~='string' then
-		error('illegal argument type', 2)
+		error('illegal argument type: '..type(class), 2)
 	end
 	local clist=self:getproperty('class')
 	if not clist then
@@ -126,7 +137,7 @@ end
 ]]
 function xml.node:hasclass(class)
 	if type(class)~='string' then
-		error('illegal argument type', 2)
+		error('illegal argument type: '..type(class), 2)
 	end
 	local clist=self:getproperty('class')
 	if not clist then
@@ -391,6 +402,9 @@ end
 	Creates a text node holding the given text.
 ]]
 function xml.createtextnode(text)
+	if type(text)=='number' then
+		text=tostring(text)
+	end
 	if type(text)~='string' then
 		error('attempting to creating a text node with a '..type(text), 2)
 	end
@@ -404,7 +418,7 @@ end
 ]]
 function xml.createnode(t)
 	if type(t)~='string' or (t~='#text' and not t:match('^[%l%u%d:]+$')) then
-		error('illegal type for node', 2)
+		error('illegal type for node: '..type(t), 2)
 	end
 	local node={}
 	node.type=t
