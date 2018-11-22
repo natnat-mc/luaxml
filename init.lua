@@ -478,9 +478,9 @@ function xml.parse(code, html)
 	if html then
 		-- remove any DOCTYPE tags
 		code=code:gsub('<!DOCTYPE.->', '')
-		-- remove any comments
-		code=code:gsub('<!%-%-.-%-%->', '')
 	end
+	-- remove any comments
+	code=code:gsub('<!%-%-.-%-%->', '')
 	-- int skip(string str, int idx)
 	-- 	Skips whitespace.
 	local function skip(str, idx)
@@ -598,22 +598,6 @@ function xml.parse(code, html)
 		end
 	end
 	root.parent=nil
-	-- fix some stuff if in HTML mode
-	if html then
-		-- fix the structure
-		if root.type=='body' then
-			local newroot=xml.createnode('html')
-			newroot:appendchild(xml.createnode('head'))
-			newroot:appendchild(root)
-			root=newroot
-		elseif root.type~='html' then
-			local html=xml.createnode('html')
-			html:appendchild(xml.createnode('head'))
-			local body=html:appendchild(xml.createnode('body'))
-			body:appendchild(root)
-			root=html
-		end
-	end
 	return root, table.concat(debugbuf, '\n')
 end
 
