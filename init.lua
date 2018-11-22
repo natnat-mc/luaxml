@@ -357,7 +357,7 @@ function xml.node:dump(html, pretty)
 		return table.concat(code)
 	end
 	table.insert(code, '>')
-	if pretty and not (#self.children==1 and self.children[1].type=='#text') then
+	if pretty and not ((not self.children) or #self.children==0 or (#self.children==1 and self.children[1].type=='#text')) then
 		table.insert(code, '\n')
 	end
 	for i, v in ipairs(self.children) do
